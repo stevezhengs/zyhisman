@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>朋友圈</title>
+    <link rel="shortcut icon" href="image/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+    <script src="js/wclist.js"></script>
+    <script src="js/date.js"></script>
+    <script src="js/image.js"></script>
+
+</head>
+<body>
+<div id="page-all">
+    <div class="header">
+        <img src="image/background.jpg" class="header-image img-responsive img_cover">
+
+        <script type="text/javascript">
+            document.write("<img src=\"" + data.head + "\" class=\"person-head img-rounded\">");
+        </script>
+
+    </div>
+
+    <div id="bubble1" class="bubble" style="display: none;">
+        <p></p>
+        <div class="arrow"></div>
+    </div>
+
+    <div id="bubble2" class="bubble2" style="display: none">
+        <p></p>
+        <div class="arrow2"></div>
+    </div>
+
+    <div class="content">
+
+<script type="text/javascript">
+
+    function showDay(idx) {
+        var div = document.getElementById("date"+idx);
+        var popup = document.getElementById("bubble1");
+        if (idx % 2 == 0) {
+            popup = document.getElementById("bubble2");
+        }
+        popup.style.left = div.offsetLeft - 180 + "px";
+        popup.style.top = div.offsetTop - 30 + "px";
+        popup.style.display = "block";
+        //
+        var newDate = new Date();
+        newDate.setTime(data.list[idx].time * 1000);
+        var text = newDate.format('YYYY年M月d日 hh:mm')
+        //
+        popup.firstElementChild.innerText = text;
+    }
+
+    function hideDay(idx) {
+        var popup = document.getElementById("bubble1");
+        if (idx % 2 == 0) {
+            popup = document.getElementById("bubble2");
+        }
+        popup.style.display = "none";
+    }
+
+    function clickComment(idx) {
+        var display = document.getElementById("comment"+idx).style.display;
+        if (display == "none") {
+            document.getElementById("comment"+idx).style.display = "block";
+        } else {
+            document.getElementById("comment"+idx).style.display = "none";
+        }
+    }
+
+    for (var i=0; i<data.list.length; i++) {
+        var item = data.list[i];
+        //
+        document.write("<div class=\"day-list\">");
+        //
+        var newDate = new Date();
+        newDate.setTime(item.time * 1000);
+        document.write("<div class=\"date\" id=\"date" + i + "\" onmouseover='showDay(" + i + ")' onmouseout='hideDay(" + i + ")'>");
+        document.write("<h3 style='display: inline-block;margin: 0px;padding: 0px 2px;'>" + newDate.format('dd') + "</h3>" + "<h5 style='display: inline-block;margin: 0px;padding: 0px 0px 0px 2px;'>" + newDate.format('M') + "月</h5>")
+        document.write("</div>");
+        //
+        if (item.desc) {
+            if (item.type == 2) {           // MediaInfoTypeText
+                document.write("<div class=\"text\">");
+                document.write("<p class=\"list-text2\">" + item.desc + "</p>");
+                document.write("</div>");
+            } else if (item.type == 1) {
+                document.write("<p class=\"list-text\">" + item.desc + "</p>");
+            }
+        }
+        if (item.media) {
+            if (item.type == 1) {       // MediaInfoTypeImage
+                document.write("<div class=\"pic\">");
+                document.write("<div class=\"container\">");
+                var count = item.media.length;
+                var left = "";
+                if (count == 1) {
+                    left = "pull-left1";
+                    count = 2;
+                } else if (count == 2 || count == 4) {
+                    left = "pull-left2";
+                    count = 2;
+                } else {
+                    left = "pull-left3";
+                    count = 3;
+                }
+                for (var j=0; j<item.media.length; j++) {
+                    var img = item.media[j];
+                    document.write("<div>");
+                    document.write("<a type=\"image\" class=\"fancybox-thumbs\" data-fancybox-group=\"thumb-" + i + "\" href=\"" + img + "\">");
+                    document.write("<img data-src=\"" + img + "\" class=\"img_cover pic-" + count + " " + left + "\"/>");
+                    document.write("</a>");
+                    document.write("</div>");
+//                    document.write("<img src=\"" + img + "\" data-action=\"zoom\" class=\"pic-" + count + " " + left + " img-responsive img_cover\">");
+                }
+                document.write("</div>");
+                document.write("</div>");
+            } else if (item.desc && item.desc.length > 0) {
+                document.write("<div class=\"url-text\">");
+                document.write("<p>" + item.desc + "</p>");
+                document.write("</div>");
+                 }
+
+
+                if (item.type == 3 || item.type == 5) {     // MediaInfoTypeURL or MediaInfoTypeVideoURL
+                document.write("<div class=\"url\">");
+                //
+                document.write("<div class=\"url-link\">");
+                document.write("<a href=\"" + item.link + "\" target=\"_blank\">");
+                document.write("<img src=\"" + item.icon + "\" onerror=\"javascript:this.src='image/icon_holder.jpg'\" class=\"url-pic img-responsive\">");
+                document.write("&nbsp;&nbsp;" + item.title);
+                document.write("</a>");
+                document.write("</div>");
+                //
+                document.write("</div>");
+            } else if (item.type == 4) {     // MediaInfoTypeMusic
+                document.write("<div class=\"music\">");
+                //
+                document.write("<div>");
+                document.write("<audio src=\"" + item.media[0] + "\" controls=\"controls\">");
+                document.write("</div>");
+                //
+                document.write("<div  class=\"music-name\" >");
+                document.write("<p>" + item.singer + "</p>" + "<p>" + item.title + "</p>")
+                document.write("</div>")
+                //
+//                document.write("<div class=\"music-text\">");
+//                document.write("<p>" + item.desc + "</p>");
+//                document.write("</div>");
+                //
+                document.write("</div>");
+            } else if (item.type == 15) {    // MediaInfoTypeVideo
+                document.write("<div class=\"video\">");
+                //
+                document.write("<div>");
+                document.write("<video src=\"" + item.media[0] + "\" type=\"video/mp4\" class=\"video-size\" controls=\"controls\">");
+                document.write("</div>");
+                //
+//                document.write("<div class=\"video-text\">");
+//                document.write("<p>" + item.desc + "</p>");
+//                document.write("</div>");
+                //
+                document.write("</div>");
+            }
+        }
+        //
+        var city = "";
+        if (item.address && item.address.length > 0) {
+            city = item.address;
+        } else if (item.city && item.city.length > 0) {
+            city = item.city;
+        }
+        if (city.length > 0) {
+            document.write("<div>");
+            document.write("<p class=\"place\">" + "<span class=\"glyphicon glyphicon-map-marker\" aria-hidden=\"true\">" + "</span>&nbsp;" + city + "</p>");
+            //
+            if (item.like.length > 0 || item.comment.length > 0) {
+                document.write("<div onclick='clickComment("+ i + ")' style='display: inline-block; float: right; cursor:pointer;'>");
+                document.write("<img src=\"image/like.png\" class=\"likes-image\"><p class=\"likes-name\" align=\"right\" >" + item.like.length + "</p>&nbsp; " + "<img src=\"image/comment.png\" class=\"likes-image\"><p class=\"likes-name\" align=\"right\" >" + item.comment.length + "" + "</p>");
+                document.write("</div>");
+            }
+            document.write("</div>");
+        } else {
+            if (item.like.length > 0 || item.comment.length > 0) {
+                document.write("<div onclick='clickComment("+ i + ")' align=\"right\" style='margin-bottom: 6px; cursor:pointer;'>");
+                document.write("<img src=\"image/like.png\" class=\"likes-image\"><p class=\"likes-name\" align=\"right\" >" + item.like.length + "</p>&nbsp; " + "<img src=\"image/comment.png\" class=\"likes-image\"><p class=\"likes-name\" align=\"right\" >" + item.comment.length + "" + "</p>");
+                document.write("</div>");
+            }
+        }
+        //
+        if (item.like.length > 0 || item.comment.length > 0) {
+            document.write("<div style='display: none' class=\"like-comment\" id=\"comment" + i + "\">");
+            document.write("<div class=\"like-comment-bubble\"></div>");
+            document.write("<div class=\"squall\">");
+            //
+            if (item.like.length > 0) {
+                document.write("<div class=\"person-like\">");
+                //
+                document.write("<img src=\"image/like.png\" class=\"likes-image\">");
+                for (var j=0; j<item.like.length; j++) {
+                    var like = item.like[j];
+                    document.write("<p class=\"likes-name\">" + like.nickname + "</p>");
+                }
+                //
+                document.write("</div>");   // person-like
+            }
+            if (item.comment.length > 0) {
+                for (var j=0; j<item.comment.length; j++) {
+                    var comment = item.comment[j];
+                    document.write("<div class=\"person-comment\">");
+                    document.write("<div class=\"head-box\">");
+                    document.write("<img src=\"" + comment.headImage + "\" class=\"people-head img-rounded\">");
+                    document.write("</div>");   // head-box
+
+                    var newDate = new Date();
+                    newDate.setTime(comment.createTime * 1000);
+                    var text = newDate.format('YYYY-MM-dd hh:mm')
+
+                    document.write("<div class=\"say-box\">");
+                    document.write("<p class=\"comment-date-time\">" + text + "</p>");
+                    document.write("<p class=\"comment-name\">" + comment.nickname + "</p>");
+                    if (comment.refNickName) {
+                        document.write("<p style='display: inline-block'>&nbsp; 回复 &nbsp;</p><p class=\"comment-name\">" + comment.refNickName + "</p>");
+                    }
+//                    document.write("</p>");
+                    document.write("<p class=\"comment-says\">" + comment.content + "</p>");
+                    document.write("</div>");   // say-box
+                    document.write("</div>");   // person-comment
+                }
+            }
+            //
+            document.write("</div>");   // squall
+            document.write("</div>");   // like-comment
+        }
+        //
+        document.write("</div>");
+    }
+    if (data.limitation == 50) {
+        document.write("<p style='text-align: center;'>总共 " + data.list.length + " 条朋友圈  &nbsp;  &nbsp;<a style='color:#2e72bf; ' href='http://www.imxfd.com' target='_blank'> 获取全部朋友圈? </a> </p>");
+    } else {
+        document.write("<p style='text-align: center;'>总共 " + data.list.length + " 条朋友圈</p>");
+    }
+</script>
+
+
+    </div>
+
+</div>
+
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap/bootstrap.min.js"></script>
+<script src="js/lazy_img.min.js"></script>
+<!--[if lt IE 9]>
+<script src="js/bootstrap/respond.min.js"></script>
+<![endif]-->
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="js/bootstrap/ie10-viewport-bug-workaround.js"></script>
+<script src="js/bootstrap/ie-emulation-modes-warning.js"></script>
+<!-- 对IE低版本的一个小技巧.禁止在IE模式下,直接本地文件浏览 -->
+<!--[if lt IE 9]><script src="js/bootstrap/ie8-responsive-file-warning.js"></script><![endif]-->
+
+<script type="text/javascript" src="js/jquery.fancybox.js"></script>
+<!--缩略图样式-->
+<script type="text/javascript" src="js/jquery.fancybox-thumbs.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.fancy').fancybox();
+        $('.fancybox-thumbs').fancybox({
+            prevEffect : 'none',
+            nextEffect : 'none',
+
+            closeBtn  : false,
+            arrows    : false,
+            nextClick : true,
+
+            helpers : {
+                thumbs : {
+                    width  : 50,
+                    height : 50
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>
